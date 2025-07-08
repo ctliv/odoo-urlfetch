@@ -41,8 +41,8 @@ class UrlfetchController(http.Controller):
         try:
             os.environ["DEBUG"] = "pw:browser*"
             with sync_playwright() as p:
-                print("Launching Chromium with Playwright...")
-                browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+                print("Launching Firefox with Playwright...")
+                browser = p.firefox.launch(headless=True)
                 page = browser.new_page()
                 page.goto(url, wait_until="load")
                 html = page.content()
