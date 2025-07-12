@@ -41,11 +41,30 @@ class UrlfetchController(http.Controller):
         try:
             os.environ["DEBUG"] = "pw:browser*"
             with sync_playwright() as p:
-                print("Launching Firefox with Playwright...")
-                browser = p.firefox.launch(headless=True)
+                print("Starting Playwright in headless mode...")
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-dev-shm-usage",
+                    ],
+                )
+
+                print("Launching browser with Playwright...")
                 page = browser.new_page()
+
+                print("New page created, navigating to the URL...")
                 page.goto(url, wait_until="load")
+
+                print("Waiting for the page to load...")
+                page.wait_for_load_state("networkidle", timeout=60000)
+
+                print("Page loaded, retrieving HTML content...")
                 html = page.content()
+
+                print("HTML content retrieved successfully.")
+                print(html)
                 browser.close()
         except PlaywrightError as e:
             # Log the error message for debugging
